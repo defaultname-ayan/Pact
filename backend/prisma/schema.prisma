@@ -31,3 +31,28 @@ model RefreshToken {
   createdAt DateTime @default(now())
 }
 
+enum PactStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  FAILED
+  DECLINED
+}
+
+enum StakeType {
+  MONEY
+  FORFEIT
+  PUBLIC_SHAME
+}
+
+model Pact {
+  id          Int         @id @default(autoincrement())
+  creatorId   Int
+  partnerId   Int?
+  title       String
+  description String
+  deadline    DateTime
+  status      PactStatus  @default(PENDING)
+  stakeType   StakeType
+  createdAt   DateTime    @default(now())
+}

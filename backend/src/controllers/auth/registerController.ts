@@ -18,6 +18,12 @@ const registerSchema = z.object({
 export const registerUser = async (req: Request, res: Response) => {
   const { email, password, username }: RegisterRequest = req.body;
 
+  console.log("[auth][register] request received", {
+    email,
+    username,
+    hasPassword: Boolean(password),
+  });
+
   try {
     const validatedData = registerSchema.parse({
       email,
@@ -35,6 +41,12 @@ export const registerUser = async (req: Request, res: Response) => {
       },
     });
 
+    console.log("[auth][register] success", {
+      userId: user.id,
+      email: user.email,
+      username: user.username,
+    });
+
     return res.status(201).json({
       id: user.id,
       email: user.email,
@@ -42,6 +54,9 @@ export const registerUser = async (req: Request, res: Response) => {
     });
   } catch (error: unknown) {
     if (error instanceof z.ZodError) {
+      console.warn("[auth][register] validation error", {
+        issues: error.issues,
+      });
       return res.status(400).json({
         error: error.issues,
       });
@@ -53,10 +68,16 @@ export const registerUser = async (req: Request, res: Response) => {
       "code" in error &&
       error.code === "P2002"
     ) {
+      console.warn("[auth][register] duplicate user", {
+        email,
+        username,
+      });
       return res.status(400).json({
         error: "User already exists",
       });
     }
+
+    console.error("[auth][register] unexpected error", error);
 
     return res.status(500).json({
       error: "Error registering user",

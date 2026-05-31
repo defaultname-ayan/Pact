@@ -22,9 +22,9 @@ export default (req: AuthRequest, res: Response, next: NextFunction) => {
   }
 
   try {
-    const verifyToken = verifyJWT(token);
+    const decoded = verifyJWT(token);
 
-    req.user = verifyToken;
+    req.user = decoded;
 
     next();
   } catch (error) {
